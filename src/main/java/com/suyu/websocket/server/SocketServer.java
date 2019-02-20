@@ -1,6 +1,11 @@
 package com.suyu.websocket.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -12,6 +17,9 @@ import java.util.Map;
 @Component
 public class SocketServer {
 
+	@Autowired
+	private ObjectMapper objectMapper;   // 注入进来的objectMapper竟然是null
+
 	private Session session;
 	private static Map<String, Session> sessionPool = new HashMap<String, Session>();
 	private static Map<String, String> sessionIds = new HashMap<String, String>();
@@ -22,12 +30,19 @@ public class SocketServer {
 	 * @param session
 	 * @param userid
 	 *            用户名
+	 * @throws JsonProcessingException
 	 */
 	@OnOpen
-	public void open(Session session, @PathParam(value = "userid") String userid) {
+	public void open(Session session, @PathParam(value = "userid") String userid) throws JsonProcessingException {
+		if(sessionPool.containsKey(userid)) {
+			System.out.println(userid + " 信息重复");
+			return;
+		}
+
 		this.session = session;
 		sessionPool.put(userid, session);
 		sessionIds.put(session.getId(), userid);
+
 		System.out.println(userid + " 正在请求链接");
 	}
 

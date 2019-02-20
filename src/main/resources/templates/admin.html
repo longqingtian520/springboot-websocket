@@ -17,19 +17,8 @@
             background-color: white;
         }
     </style>
-    <!--<script type="text/javascript">-->
-        <!--var _maq = _maq || [];-->
-        <!--_maq.push(['_setAccount', 'niezhiliang']);-->
-
-        <!--(function() {-->
-            <!--var ma = document.createElement('script'); ma.type = 'text/javascript'; ma.async = true;-->
-            <!--ma.src = 'http://127.0.0.1:8086/js/request.js';-->
-            <!--var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ma, s);-->
-        <!--})();-->
-    <!--</script>-->
 </head>
 <body>
-
 
 <div class="layui-row">
     <h1 class="threed">WebSocket服务端</h1>
@@ -144,12 +133,10 @@
 
        function connect(){
                if ('WebSocket' in window){
-                   ws = new WebSocket("ws://www.niezhiliang.com:8086/socketServer/niezhiliang9595");
-                   //ws = new WebSocket("ws://127.0.0.1:8086/socketServer/niezhiliang9595");
+                   ws = new WebSocket("ws://127.0.0.1:8086/socketServer/niezhiliang9595");
                }
                else if ('MozWebSocket' in window){
-                   ws = new MozWebSocket("ws://www.niezhiliang.com:8086/socketServer/niezhiliang9595");
-                   //ws = new MozWebSocket("ws://127.0.0.1:8086/socketServer/niezhiliang9595");
+                   ws = new MozWebSocket("ws://127.0.0.1:8086/socketServer/niezhiliang9595");
                }
                else{
                    alert("该浏览器不支持websocket");
