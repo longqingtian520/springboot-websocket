@@ -74,9 +74,9 @@ public class WebSocketController {
     @RequestMapping("webstatus")
     public String webstatus(){
         //当前用户个数
-       int count = SocketServer.getOnlineNum();
+       int count = socketServer.getOnlineNum();
        //当前用户的username
-       SocketServer.getOnlineUsers();
+       socketServer.getOnlineUsers();
         return "tongji";
     }
 }

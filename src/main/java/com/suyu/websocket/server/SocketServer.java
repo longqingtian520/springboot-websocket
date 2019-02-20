@@ -6,7 +6,6 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @ServerEndpoint(value = "/socketServer/{userid}")
@@ -14,58 +13,64 @@ import java.util.Map;
 public class SocketServer {
 
 	private Session session;
-	private static Map<String,Session> sessionPool = new HashMap<String,Session>();
-	private static Map<String,String> sessionIds = new HashMap<String,String>();
+	private static Map<String, Session> sessionPool = new HashMap<String, Session>();
+	private static Map<String, String> sessionIds = new HashMap<String, String>();
 
 	/**
 	 * 用户连接时触发
+	 *
 	 * @param session
 	 * @param userid
+	 *            用户名
 	 */
 	@OnOpen
-	public void open(Session session,@PathParam(value="userid")String userid){
+	public void open(Session session, @PathParam(value = "userid") String userid) {
 		this.session = session;
 		sessionPool.put(userid, session);
 		sessionIds.put(session.getId(), userid);
+		System.out.println(userid + " 正在请求链接");
 	}
 
 	/**
 	 * 收到信息时触发
+	 *
 	 * @param message
 	 */
 	@OnMessage
-	public void onMessage(String message){
-		sendMessage(sessionIds.get(session.getId())+"<--"+message,"niezhiliang9595");
-		System.out.println("发送人:"+sessionIds.get(session.getId())+"内容:"+message);
+	public void onMessage(String message) {
+		sendMessage(sessionIds.get(session.getId()) + "<--" + message, "niezhiliang9595");
+		System.out.println("发送人:" + sessionIds.get(session.getId()) + "内容:" + message);
 	}
 
 	/**
 	 * 连接关闭触发
 	 */
 	@OnClose
-	public void onClose(){
+	public void onClose() {
 		sessionPool.remove(sessionIds.get(session.getId()));
 		sessionIds.remove(session.getId());
 	}
 
 	/**
 	 * 发生错误时触发
+	 *
 	 * @param session
 	 * @param error
 	 */
-    @OnError
-    public void onError(Session session, Throwable error) {
-        error.printStackTrace();
-    }
+	@OnError
+	public void onError(Session session, Throwable error) {
+		error.printStackTrace();
+	}
 
 	/**
-	 *信息发送的方法
+	 * 信息发送的方法
+	 *
 	 * @param message
 	 * @param userId
 	 */
-	public synchronized static void sendMessage(String message,String userId){
+	public synchronized static void sendMessage(String message, String userId) {
 		Session s = sessionPool.get(userId);
-		if(s!=null){
+		if (s != null) {
 			try {
 				s.getBasicRemote().sendText(message);
 			} catch (IOException e) {
@@ -76,51 +81,54 @@ public class SocketServer {
 
 	/**
 	 * 获取当前连接数
+	 *
 	 * @return
 	 */
-	public synchronized static int getOnlineNum(){
-		if(sessionIds.values().contains("niezhiliang9595")) {
+	public synchronized  int getOnlineNum() {
+		if (sessionIds.values().contains("niezhiliang9595")) {
 
-			return sessionPool.size()-1;
+			return sessionPool.size() - 1;
 		}
 		return sessionPool.size();
 	}
 
 	/**
 	 * 获取在线用户名以逗号隔开
+	 *
 	 * @return
 	 */
-	public synchronized static String getOnlineUsers(){
+	public synchronized  String getOnlineUsers() {
 		StringBuffer users = new StringBuffer();
-	    for (String key : sessionIds.keySet()) {//niezhiliang9595是服务端自己的连接，不能算在线人数
-	    	if (!"niezhiliang9595".equals(sessionIds.get(key)))
-			{
-				users.append(sessionIds.get(key)+",");
+		for (String key : sessionIds.keySet()) {// niezhiliang9595是服务端自己的连接，不能算在线人数
+			if (!"niezhiliang9595".equals(sessionIds.get(key))) {
+				users.append(sessionIds.get(key) + ",");
 			}
 		}
-	    return users.toString();
+		return users.toString();
 	}
 
 	/**
 	 * 信息群发
+	 *
 	 * @param msg
 	 */
 	public synchronized static void sendAll(String msg) {
 		for (String key : sessionIds.keySet()) {
-			if (!"niezhiliang9595".equals(sessionIds.get(key)))
-			{
+			if (!"niezhiliang9595".equals(sessionIds.get(key))) {
 				sendMessage(msg, sessionIds.get(key));
 			}
-	    }
+		}
 	}
 
 	/**
 	 * 多个人发送给指定的几个用户
+	 *
 	 * @param msg
-	 * @param persons  用户s
+	 * @param persons
+	 *            用户s
 	 */
 
-	public synchronized static void SendMany(String msg,String [] persons) {
+	public synchronized static void SendMany(String msg, String[] persons) {
 		for (String userid : persons) {
 			sendMessage(msg, userid);
 		}
