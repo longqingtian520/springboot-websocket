@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * wangqiubao
  * websocket
  * 消息推送(个人和广播)
  */
